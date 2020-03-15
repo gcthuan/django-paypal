@@ -10,7 +10,7 @@ from paypal.utils import warn_untested
 
 def get_sha1_hexdigest(salt, raw_password):
     warn_untested()
-    return hashlib.sha1(smart_str(salt) + smart_str(raw_password)).hexdigest()
+    return hashlib.sha1((smart_str(salt) + smart_str(raw_password)).encode('utf-8')).hexdigest()
 
 
 def duplicate_txn_id(ipn_obj):
@@ -57,13 +57,13 @@ def make_secret(form_instance, secret_fields=None):
     for name in secret_fields:
         if hasattr(form_instance, 'cleaned_data'):
             if name in form_instance.cleaned_data:
-                data += unicode(form_instance.cleaned_data[name])
+                data += str(form_instance.cleaned_data[name])
         else:
             # Initial data passed into the constructor overrides defaults.
             if name in form_instance.initial:
-                data += unicode(form_instance.initial[name])
+                data += str(form_instance.initial[name])
             elif name in form_instance.fields and form_instance.fields[name].initial is not None:
-                data += unicode(form_instance.fields[name].initial)
+                data += str(form_instance.fields[name].initial)
 
     secret = get_sha1_hexdigest(settings.SECRET_KEY, data)
     return secret
